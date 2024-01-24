@@ -1,80 +1,43 @@
-/*
- * File_Name: 102-counting_sort.c
- * Created: 29th June, 2023
- * Author: David James Taiye (Official0mega)
- * Size_Of_File: Undefined
- * Project_Title: sorting_algorithms
- * Status: Submitted.!
- */
-
-
 #include "sort.h"
-
 /**
- * counting_sort - Sorts an array using the counting sort algorithm.
- * @array: The array to sort.
- * @size: The length of the array.
- *
- * Description: This function sorts an array using the counting sort algorithm,
- *              which works for non-negative integers. It creates a count array
- *              to store the frequency of each element in the input array.
- *              It then modifies the count array to store the cumulative sum
- *              of the frequencies. Finally, it uses the count array to build
- *              the sorted array.
- */
+ * counting_sort - sorts an array of integers in ascending
+ * order using the Counting sort algorithm
+ * @array: pointer to array
+ * @size: size of the array
+ **/
 void counting_sort(int *array, size_t size)
 {
-	int *count_arr = NULL, *array_sorted = NULL, max_val = 0;
+	int n, j, *count_array, *aux;
 	size_t i;
 
-	if ((array == NULL) || (size < 2))
+	if (!array || size < 2)
 		return;
-
-	/* Find the maximum value in the array */
-	for (i = 0; i < size; i++) {
-		max_val = (array[i] > max_val ? array[i] : max_val);
-		if (array[i] < 0)
-			return; /* Counting sort only works for non-negative integers */
-	}
-
-	/* Create the count array */
-	count_arr = malloc(sizeof(int) * (max_val + 1));
-	if (count_arr == NULL)
-		return;
-
-	/* Create the sorted array */
-	array_sorted = malloc(sizeof(int) * size);
-	if (array_sorted == NULL) {
-		free(count_arr);
-		return;
-	}
-
-	/* Initialize the count array */
-	for (i = 0; i < (size_t)(max_val + 1); i++)
-		count_arr[i] = 0;
-
-	/* Count the frequency of each element */
+	n = array[0];
 	for (i = 0; i < size; i++)
-		count_arr[array[i]]++;
-
-	/* Modify the count array to store the cumulative sum */
-	for (i = 1; i < (size_t)(max_val + 1); i++)
-		count_arr[i] += count_arr[i - 1];
-
-	print_array(count_arr, max_val + 1);
-
-	/* Build the sorted array using the count array */
-	for (i = size - 1;; i--) {
-		count_arr[array[i]]--;
-		array_sorted[count_arr[array[i]]] = array[i];
-		if (i == 0)
-			break;
+	{
+		if (array[i] > n)
+			n = array[i];
 	}
-
-	/* Copy the sorted array back to the input array */
+	count_array = calloc((n + 1), sizeof(int));
 	for (i = 0; i < size; i++)
-		array[i] = array_sorted[i];
-
-	free(array_sorted);
-	free(count_arr);
+	{
+		count_array[array[i]]++;
+	}
+	for (j = 1; j < n; j++)
+	{
+		count_array[j + 1] += count_array[j];
+	}
+	print_array(count_array, n + 1);
+	aux = malloc(sizeof(int) * size);
+	for (i = 0; i < size; i++)
+	{
+		count_array[array[i]]--;
+		aux[count_array[array[i]]] = array[i];
+	}
+	for (i = 0; i < size; i++)
+	{
+		array[i] = aux[i];
+	}
+	free(aux);
+	free(count_array);
 }
